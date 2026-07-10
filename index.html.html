@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MVMNT Enterprises — Business Services</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #f0f2ed;
+    --surface: #ffffff;
+    --surface-2: #f7f8f5;
+    --green-dark: #2d6a2d;
+    --green-mid: #3a8a3a;
+    --green-light: #4caf50;
+    --green-tint: #edf3ed;
+    --green-tint-2: #e0ebe0;
+    --cyan: #01B9DD;
+    --cyan-tint: #e6fafd;
+    --ink: #1a2e1a;
+    --ink-mid: #2f4a2f;
+    --muted: #6b7f6b;
+    --faint: #9aaa9a;
+    --border: #dde5dd;
+    --border-strong: #c8d5c8;
+    --radius: 12px;
+    --radius-lg: 20px;
+    --shadow: 0 2px 12px rgba(45,106,45,0.06);
+    --shadow-md: 0 4px 24px rgba(45,106,45,0.10);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== NAV ===== */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(240,242,237,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo {
+    display: flex; align-items: center; gap: 8px;
+    text-decoration: none;
+  }
+  .nav-logo-mark {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px; font-weight: 700;
+    color: var(--green-dark);
+    letter-spacing: 0.5px;
+  }
+  .nav-logo-slash {
+    font-size: 16px; font-weight: 300;
+    color: var(--green-mid);
+    margin-right: 1px;
+  }
+  .nav-logo-name {
+    font-size: 13px; font-weight: 600;
+    color: var(--ink);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  .nav-cta {
+    background: var(--green-dark);
+    color: #fff;
+    font-size: 13px; font-weight: 600;
+    padding: 8px 18px;
+    border-radius: var(--radius);
+    text-decoration: none;
+    transition: background 0.15s;
+    border: none; cursor: pointer; font-family: inherit;
+  }
+  .nav-cta:hover { background: var(--green-mid); }
+
+  /* ===== HERO ===== */
+  .hero {
+    display: flex; align-items: center;
+    padding: 96px 32px 64px;
+    position: relative; overflow: hidden;
+  }
+  .hero-bg-mark {
+    position: absolute;
+    right: -20px; top: 50%;
+    transform: translateY(-52%);
+    font-family: 'Inter', sans-serif;
+    font-size: 360px; font-weight: 300;
+    color: rgba(45,106,45,0.10);
+    letter-spacing: -10px;
+    pointer-events: none; user-select: none;
+    line-height: 1; white-space: nowrap;
+    z-index: 0;
+  }
+  .hero-inner {
+    max-width: 820px; margin: 0 auto; width: 100%;
+    position: relative; z-index: 1;
+  }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--green-dark);
+    margin-bottom: 20px;
+  }
+  .eyebrow-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green-light);
+  }
+  .hero-headline {
+    font-size: clamp(32px, 5vw, 54px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -1.2px;
+    color: var(--ink);
+    margin-bottom: 18px;
+  }
+  .hero-headline .accent { color: var(--green-dark); }
+  .hero-sub {
+    font-size: clamp(14px, 1.6vw, 16px);
+    color: var(--muted);
+    max-width: 480px;
+    line-height: 1.7;
+    margin-bottom: 32px;
+    font-weight: 400;
+  }
+  .hero-actions {
+    display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+  }
+  .btn-primary {
+    background: var(--green-dark);
+    color: #fff;
+    font-size: 14px; font-weight: 600;
+    padding: 13px 24px;
+    border-radius: var(--radius);
+    text-decoration: none;
+    transition: background 0.15s;
+    display: inline-flex; align-items: center; gap: 8px;
+    border: none; cursor: pointer; font-family: inherit;
+  }
+  .btn-primary:hover { background: var(--green-mid); }
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--ink-mid);
+    font-size: 14px; font-weight: 600;
+    padding: 13px 24px;
+    border-radius: var(--radius);
+    text-decoration: none;
+    border: 1.5px solid var(--border-strong);
+    transition: border-color 0.15s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-secondary:hover { border-color: var(--green-dark); }
+
+  /* ===== SECTION ===== */
+  section { padding: 88px 32px; }
+  .section-inner { max-width: 960px; margin: 0 auto; }
+  .section-eyebrow {
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--green-dark);
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-eyebrow::before {
+    content: '';
+    display: block; width: 24px; height: 1.5px;
+    background: var(--green-dark);
+  }
+  .section-title {
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 700; letter-spacing: -0.8px;
+    color: var(--ink); line-height: 1.15;
+    margin-bottom: 14px;
+  }
+  .section-sub {
+    font-size: 15px; color: var(--muted);
+    max-width: 500px; line-height: 1.7;
+    margin-bottom: 52px;
+  }
+
+  /* ===== SERVICES ===== */
+  .services-section { background: var(--surface); }
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+  }
+  .service-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px 24px;
+    transition: box-shadow 0.2s, border-color 0.2s;
+  }
+  .service-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--border-strong);
+  }
+  .service-card.featured {
+    background: var(--green-tint);
+    border-color: var(--green-tint-2);
+  }
+  .service-card.featured:hover { border-color: var(--green-dark); }
+  .service-badge {
+    display: inline-block;
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 9px; border-radius: 999px;
+    background: var(--green-dark); color: #fff;
+    margin-bottom: 18px;
+  }
+  .service-icon {
+    font-size: 24px; margin-bottom: 14px; display: block;
+  }
+  .service-name {
+    font-size: 18px; font-weight: 700;
+    color: var(--ink); margin-bottom: 8px;
+    letter-spacing: -0.3px;
+  }
+  .service-desc {
+    font-size: 13.5px; color: var(--muted);
+    line-height: 1.65; margin-bottom: 20px;
+  }
+  .service-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 600;
+    color: var(--green-dark); text-decoration: none;
+    transition: gap 0.15s;
+  }
+  .service-link:hover { gap: 10px; }
+  .swype-strip {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 20px; padding-top: 16px;
+    border-top: 1px solid var(--border-strong);
+    font-size: 10px; font-weight: 700;
+    color: var(--faint); letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  .swype-logo-text {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px; font-weight: 900;
+    letter-spacing: 2px; color: var(--cyan);
+  }
+  .swype-logo-img { height: 18px; width: auto; display: block; }
+  .swype-logo-img-sm { height: 16px; width: auto; display: block; }
+  .coming-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--faint);
+    margin-bottom: 14px;
+  }
+  .service-card.coming { opacity: 0.55; }
+  .service-card.coming:hover { box-shadow: none; border-color: var(--border); }
+
+  /* ===== PAYMENTS SECTION ===== */
+  .payments-section { background: var(--bg); }
+  .payments-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px; align-items: start;
+  }
+  @media (max-width: 740px) { .payments-split { grid-template-columns: 1fr; gap: 36px; } }
+  .payments-checklist { list-style: none; }
+  .payments-checklist li {
+    display: flex; gap: 12px; align-items: flex-start;
+    font-size: 14px; color: var(--ink-mid);
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+    line-height: 1.55;
+  }
+  .payments-checklist li:last-child { border-bottom: none; }
+  .check-mark {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--green-tint-2);
+    color: var(--green-dark);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+    font-size: 11px; font-weight: 700;
+  }
+  .payments-cta { margin-top: 32px; }
+
+  /* Flip card */
+  .flip-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    box-shadow: var(--shadow);
+  }
+  .flip-label-row {
+    font-size: 10px; font-weight: 800; letter-spacing: 2px;
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+  .flip-label-row.cost { color: #c0392b; }
+  .flip-label-row.revenue { color: var(--green-dark); }
+  .flip-block {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px; margin-bottom: 10px;
+  }
+  .flip-num {
+    font-size: 38px; font-weight: 700;
+    letter-spacing: -1px; line-height: 1;
+  }
+  .flip-num.cost { color: #c0392b; }
+  .flip-num.revenue { color: var(--green-dark); }
+  .flip-desc { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .flip-arrow {
+    text-align: center; font-size: 18px;
+    color: var(--faint); padding: 6px 0; margin-bottom: 10px;
+  }
+  .flip-disclaimer {
+    font-size: 11px; color: var(--faint);
+    line-height: 1.55; margin-top: 16px;
+    padding-top: 14px; border-top: 1px solid var(--border);
+  }
+  .swype-co-brand {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 14px;
+    font-size: 10px; font-weight: 700;
+    color: var(--faint); letter-spacing: 1.5px; text-transform: uppercase;
+  }
+
+  /* ===== CTA ===== */
+  .cta-section { background: var(--surface); }
+  .cta-card {
+    background: var(--green-tint);
+    border: 1px solid var(--green-tint-2);
+    border-radius: var(--radius-lg);
+    padding: 56px 48px;
+    text-align: center;
+    max-width: 680px; margin: 0 auto;
+  }
+  @media (max-width: 600px) { .cta-card { padding: 40px 28px; } }
+  .cta-title {
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 700; letter-spacing: -1px;
+    color: var(--ink); margin-bottom: 14px; line-height: 1.1;
+  }
+  .cta-sub {
+    font-size: 15px; color: var(--muted);
+    margin-bottom: 36px; line-height: 1.7;
+    max-width: 420px; margin-left: auto; margin-right: auto;
+    margin-bottom: 36px;
+  }
+  .contact-row {
+    display: flex; gap: 12px; justify-content: center;
+    flex-wrap: wrap; margin-bottom: 16px;
+  }
+  .contact-chip {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface);
+    border: 1.5px solid var(--border-strong);
+    border-radius: 999px;
+    padding: 10px 20px;
+    font-size: 13.5px; font-weight: 600;
+    color: var(--ink); text-decoration: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .contact-chip:hover {
+    border-color: var(--green-dark);
+    box-shadow: var(--shadow);
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    padding: 28px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .footer-logo {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 700;
+    color: var(--ink-mid); letter-spacing: 1.5px; text-transform: uppercase;
+  }
+  .footer-note { font-size: 11.5px; color: var(--faint); }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 600px) {
+    section { padding: 64px 20px; }
+    nav { padding: 0 20px; }
+    .hero { padding: 88px 20px 64px; }
+    footer { padding: 24px 20px; }
+  }
+
+  /* ===== FADE IN ===== */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero-eyebrow { animation: fadeUp 0.45s ease both; }
+  .hero-headline { animation: fadeUp 0.45s 0.08s ease both; }
+  .hero-sub { animation: fadeUp 0.45s 0.16s ease both; }
+  .hero-actions { animation: fadeUp 0.45s 0.24s ease both; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <span class="nav-logo-slash">//</span>
+    <span class="nav-logo-name">MVMNT Enterprises</span>
+  </a>
+  <a class="nav-cta" href="mailto:Zac@mvmntenterprises.com">Get in Touch</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner" style="position:relative;">
+    <div class="hero-bg-mark">//</div>
+    <div class="hero-eyebrow">
+      <span class="eyebrow-dot"></span>
+      Business Services
+    </div>
+    <h1 class="hero-headline">
+      Keep your business<br/>
+      <span class="accent">moving forward.</span>
+    </h1>
+    <p class="hero-sub">
+      MVMNT Enterprises helps businesses make smarter decisions — starting with how you handle payment processing. Simple, honest guidance. Real results.
+    </p>
+    <div class="hero-actions">
+      <a class="btn-primary" href="#payments">See How It Works →</a>
+      <a class="btn-secondary" href="mailto:Zac@mvmntenterprises.com">Talk to Zac</a>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services-section" id="services">
+  <div class="section-inner">
+    <div class="section-eyebrow">What We Do</div>
+    <h2 class="section-title">Services built around your business.</h2>
+    <p class="section-sub">We start where most businesses have the clearest opportunity — and grow from there.</p>
+
+    <div class="services-grid">
+
+      <!-- Payment Processing -->
+      <div class="service-card featured">
+        <span class="service-icon">💳</span>
+        <div class="service-name">Payment Processing</div>
+        <p class="service-desc">
+          Most businesses treat card fees as a fixed cost. We help you see it differently — and structure your processing so it stops being a cost and starts creating value.
+        </p>
+        <a class="service-link" href="#payments">See how it works →</a>
+        <div class="swype-strip">
+          Powered by
+          <span class="swype-logo-text">Swype</span>
+        </div>
+      </div>
+
+      <!-- Technology -->
+      <div class="service-card coming">
+        <div class="coming-label">Coming Soon</div>
+        <span class="service-icon">⚙️</span>
+        <div class="service-name">Technology</div>
+        <p class="service-desc">IT management, cybersecurity, and practical technology solutions for growing businesses.</p>
+      </div>
+
+      <!-- More -->
+      <div class="service-card coming">
+        <div class="coming-label">Coming Soon</div>
+        <span class="service-icon">📈</span>
+        <div class="service-name">More Services</div>
+        <p class="service-desc">Additional services are on the way — built around what growing businesses actually need to move forward.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PAYMENT PROCESSING -->
+<section class="payments-section" id="payments">
+  <div class="section-inner">
+    <div class="section-eyebrow">Payment Processing</div>
+    <h2 class="section-title">Is your processing<br/>costing you money?</h2>
+    <p class="section-sub">It shouldn't. We help you understand what you're actually paying — and what's possible instead.</p>
+
+    <div class="payments-split">
+      <div>
+        <ul class="payments-checklist">
+          <li>
+            <span class="check-mark">✓</span>
+            <span><strong>Free statement review</strong> — we look at what you're currently paying and tell you exactly what the opportunity is before anything changes.</span>
+          </li>
+          <li>
+            <span class="check-mark">✓</span>
+            <span><strong>Eliminate processing costs</strong> — through a compliant cash discount or surcharge program, card fees move to the customer at checkout.</span>
+          </li>
+          <li>
+            <span class="check-mark">✓</span>
+            <span><strong>Create a revenue stream</strong> — qualifying businesses earn a monthly revenue share based on their card processing volume.</span>
+          </li>
+          <li>
+            <span class="check-mark">✓</span>
+            <span><strong>Backed by major processors</strong> — powered by Swype, working alongside TSYS, Fiserv, and Worldpay.</span>
+          </li>
+          <li>
+            <span class="check-mark">✓</span>
+            <span><strong>No obligation to start</strong> — you see the numbers first. Nothing changes until you decide it makes sense.</span>
+          </li>
+        </ul>
+        <div class="payments-cta">
+          <a class="btn-primary" href="mailto:Zac@mvmntenterprises.com">Request a Free Statement Review →</a>
+        </div>
+      </div>
+
+      <div class="flip-panel">
+        <div style="font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:18px;">Example — $40k monthly volume</div>
+
+        <div class="flip-label-row cost">Today</div>
+        <div class="flip-block">
+          <div class="flip-num cost">−$1,200<span style="font-size:18px;font-weight:500;">/mo</span></div>
+          <div class="flip-desc">Processing fees as a business expense</div>
+        </div>
+
+        <div class="flip-arrow">↓</div>
+
+        <div class="flip-label-row revenue">With MVMNT + Swype</div>
+        <div class="flip-block">
+          <div class="flip-num revenue">+$200<span style="font-size:18px;font-weight:500;">/mo</span></div>
+          <div class="flip-desc">Monthly revenue share on the same volume</div>
+        </div>
+
+        <div class="flip-disclaimer">Example only. Your results depend on monthly volume, business type, and program eligibility. A free statement review gives you the exact number for your business.</div>
+
+        <div class="swype-co-brand">
+          Powered by
+          <span class="swype-logo-text">Swype</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="contact">
+  <div class="section-inner">
+    <div class="cta-card">
+      <div class="section-eyebrow" style="justify-content:center;margin-bottom:16px;">Let's Talk</div>
+      <h2 class="cta-title">Ready to take a look<br/>at what's possible?</h2>
+      <p class="cta-sub">No pitch, no pressure. A quick conversation or a free statement review is all it takes to get a clear picture.</p>
+      <div class="contact-row">
+        <a class="contact-chip" href="mailto:Zac@mvmntenterprises.com">
+          ✉&nbsp; Zac@mvmntenterprises.com
+        </a>
+        <a class="contact-chip" href="tel:5303190642">
+          📞&nbsp; (530) 319-0642
+        </a>
+      </div>
+      <p style="font-size:12px;color:var(--faint);margin-top:10px;">Serving businesses nationwide</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">
+    <span style="color:var(--green-dark);font-size:14px;font-weight:300;">//</span>
+    MVMNT Enterprises
+  </div>
+  <div class="footer-note">© 2026 MVMNT Group LLC · All rights reserved</div>
+</footer>
+
+</body>
+</html>
