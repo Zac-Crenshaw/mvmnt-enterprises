@@ -22,6 +22,7 @@
   --amber:#D97706; --amber-bg:#FEF3E2;
   --shadow:0 10px 30px rgba(45,106,45,.08); --shadow-sm:0 2px 8px rgba(45,106,45,.05);
   --radius:12px;
+  --border:#dde5dd; --green-mid:#3a8a3a; --green-dark:#2d6a2d;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;font-size:15px;-webkit-tap-highlight-color:transparent}
@@ -33,9 +34,31 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-
 .header-inner{display:flex;align-items:center;justify-content:space-between}
 .brand{font-size:19px;font-weight:800;color:#1a2e1a;letter-spacing:2px}
 .brand-sub{font-size:9.5px;color:#6b7f6b;letter-spacing:2px;margin-top:2px}
-.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none}
-.nav-logo-slash{font-size:16px;font-weight:300;color:#3a8a3a;margin-right:1px}
-.nav-logo-name{font-size:13px;font-weight:600;color:#1a2e1a;letter-spacing:1.5px;text-transform:uppercase}
+/* ===== NAV ===== */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(240,242,237,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 8px;
+  text-decoration: none;
+}
+.nav-logo-slash {
+  font-size: 16px; font-weight: 300;
+  color: var(--green-mid);
+  margin-right: 1px;
+}
+.nav-logo-name {
+  font-size: 13px; font-weight: 600;
+  color: var(--ink);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
 .rep-link{background:none;border:none;color:rgba(26,46,26,.35);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:.5px}
 .rep-link:hover{color:var(--cyan)}
 .rep-badge{display:none;align-items:center;gap:6px;background:rgba(45,106,45,.15);color:#2d6a2d;font-size:10.5px;font-weight:800;letter-spacing:1px;padding:5px 11px;border-radius:999px}
