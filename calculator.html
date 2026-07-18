@@ -325,6 +325,11 @@ input[type=range]{flex:1;accent-color:var(--cyan)}
   </div>
 </div>
 
+<!-- Results modal (client-side mailto/sms delivery + on-screen fallback; no backend) -->
+<div class="modal-overlay" id="resultsModal">
+  <div class="modal" id="resultsModalBody"></div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -974,11 +979,7 @@ function render(shouldScroll){
   const nextBtn = document.getElementById("nextBtn");
   if(current === STEPS.length-1){
     nextBtn.textContent = "Send My Results";
-    nextBtn.onclick = ()=>{
-      if(!profileComplete()){ showToast("Add your business name and phone so we can send your results."); return; }
-      saveLead("submitted", "step5_done");
-      showToast("Sent! We'll text your results and follow up shortly.");
-    };
+    nextBtn.onclick = submitResults;
   } else {
     nextBtn.textContent = current===0 ? "Start Check" : (current===2 ? "See My Results" : (current===3 ? "Choose Next Step" : "Continue"));
     nextBtn.onclick = ()=>go(current+1);
@@ -1294,6 +1295,160 @@ function sendReviewEmail(){
       </div>`;
   }
   showToast("Info saved — attach your statement(s) in the email and send.");
+}
+
+/* ---------- Results delivery (client-side: mailto + sms, no backend) ---------- */
+
+// Estimated current processing fees that customer-paid processing would
+// eliminate. Mirrors the on-screen scenario figure (currentCostForSwing /
+// todayValue) so the delivered message matches what the prospect saw.
+// Zero if they already pass fees to their customers.
+function feesEliminatedEstimate(){
+  if(state.currentlyPassesFees==='Yes') return 0;
+  const vol = (state.costKnowledge==='Yes, total fees' && moneyNum(state.lastMonthVolume)>0)
+    ? moneyNum(state.lastMonthVolume) : moneyNum(state.volume);
+  const base = vol*(currentEffectiveRate()/100);
+  let extra = 0;
+  if(state.feeChecklist.includes('lease'))   extra += moneyNum(state.leaseAmount) || 45;
+  if(state.feeChecklist.includes('service')) extra += 15;
+  if(state.feeChecklist.includes('pci'))     extra += 15;
+  if(state.feeChecklist.includes('gateway')) extra += 20;
+  return Math.round((state.costKnowledge==='Yes, total fees' && moneyNum(state.totalFees)>0)
+    ? moneyNum(state.totalFees) : (base + extra));
+}
+
+// The three items every results message must carry.
+function resultsFigures(){
+  const est = currentEstimate();
+  return { fees: feesEliminatedEstimate(), monthly: est.monthly || 0, annual: est.annual || 0 };
+}
+
+function resultsEmailSubject(){
+  return `Your MVMNT Enterprises results${state.bizName ? " — "+state.bizName : ""}`;
+}
+function resultsEmailBody(){
+  const r = resultsFigures();
+  return [
+    "Here are your estimated results from the MVMNT Enterprises calculator:","",
+    `Estimated processing fees eliminated: ${r.fees ? fmtMoney(r.fees)+"/mo" : "—"}`,
+    `Estimated monthly revenue share: ${r.monthly ? fmtMoney(r.monthly)+"/mo" : "—"}${r.annual ? " ("+fmtMoney(r.annual)+"/yr)" : ""}`,
+    "",
+    `To confirm your exact numbers, send a recent processing statement to ${REVIEW_EMAIL}.`,
+    "",
+    "These are estimates based on the information you provided; a statement review confirms the exact figures.","",
+    "— MVMNT Enterprises"
+  ].join("\n");
+}
+// Kept concise for SMS while still carrying the three required items.
+function resultsSmsBody(){
+  const r = resultsFigures();
+  const f = r.fees ? fmtMoney(r.fees) : "—";
+  const m = r.monthly ? fmtMoney(r.monthly) : "—";
+  const who = state.bizName ? (" for "+state.bizName) : "";
+  return `Your MVMNT Enterprises results${who}: ~${f}/mo in processing fees eliminated and ~${m}/mo estimated revenue share. Send a recent statement to ${REVIEW_EMAIL} to confirm your exact numbers. -MVMNT Enterprises`;
+}
+
+// Launch an external protocol handler (mailto:/sms:) via a transient anchor so
+// the page's JS keeps running after the OS hands off to the mail/messages app.
+function openExternal(url){
+  const a = document.createElement('a');
+  a.href = url; a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(()=>a.remove(), 200);
+}
+
+function closeResultsModal(){ document.getElementById("resultsModal").classList.remove("show"); }
+
+// Always show the results on screen — this is the sole delivery when no contact
+// info was given, and a confirmation/keep-a-copy prompt otherwise.
+function showResultsModal(sentVia){
+  const r = resultsFigures();
+  const sentLine = sentVia
+    ? `We opened your ${sentVia} with these details filled in — send it to keep a copy.`
+    : `Here are your estimated results.`;
+  const fig = (num,label)=>`
+    <div style="flex:1;background:#edf3ed;border:1px solid #c8d5c8;border-radius:12px;padding:14px;text-align:center">
+      <div style="font-size:22px;font-weight:800;color:#1f4f1f">${num}</div>
+      <div style="font-size:11px;font-weight:700;letter-spacing:.04em;color:#2d6a2d;margin-top:4px">${label}</div>
+    </div>`;
+  const body = document.getElementById("resultsModalBody");
+  body.innerHTML = `
+    <div class="modal-title">Your results &#10003;</div>
+    <div class="modal-sub">${sentLine}</div>
+    <div style="display:flex;gap:12px;margin-top:6px">
+      ${fig(r.fees ? fmtMoney(r.fees) : "—", "EST. MONTHLY FEES ELIMINATED")}
+      ${fig(r.monthly ? fmtMoney(r.monthly) : "—", "EST. MONTHLY REVENUE SHARE")}
+    </div>
+    <div class="modal-sub" style="margin-top:14px">To confirm your exact numbers, send a recent processing statement to <b>${REVIEW_EMAIL}</b>.</div>
+    <div class="modal-btns">
+      <button class="btn btn-primary" onclick="closeResultsModal()">Done</button>
+    </div>`;
+  document.getElementById("resultsModal").classList.add("show");
+}
+
+// POST the calculator submission to our CRM proxy. Best-effort and fully
+// isolated: any CRM/network failure is swallowed so it can never block or
+// interfere with results delivery to the customer.
+function syncLeadToCRM(){
+  try {
+    const est = currentEstimate();
+    const payload = {
+      business_name: state.bizName || "",
+      business_type: state.bizType || "",
+      monthly_volume: est.vol || 0,
+      current_processor: state.currentProcessor || "",
+      contact_name: state.name || state.bizName || "",
+      email: sanitizeEmail(state.email),
+      phone: state.phone || "",
+      merchant_estimate: est.monthly || 0,
+      // extra context preserved for the CRM (intake endpoint passes it through)
+      lead_id: LEAD_ID,
+      fees_eliminated: feesEliminatedEstimate(),
+      revenue_share_rate: state.revenueShareRate || "",
+      est_monthly: est.monthly || 0,
+      est_annual: est.annual || 0,
+      wants_text: !!state.wantsText,
+      source: "calculator"
+    };
+    fetch("/api/submit-lead", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+      keepalive: true
+    }).catch(()=>{});
+  } catch(_){ /* never block the user */ }
+}
+
+// Final-step submit: record the lead, sync to the CRM (fire-and-forget), then
+// deliver results by whatever contact method the customer provided.
+//   email → mailto · phone → sms · both → both · neither → on-screen only.
+function submitResults(){
+  if(!profileComplete()){ showToast("Add your business name and phone so we can send your results."); return; }
+  saveLead("submitted", "step5_done");
+  syncLeadToCRM();
+
+  const email = sanitizeEmail(state.email);
+  const hasEmail = !!email;
+  const phone = phoneDigits();
+  const hasPhone = phone.length >= 10;
+
+  if(hasEmail){
+    openExternal(`mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(resultsEmailSubject())}&body=${encodeURIComponent(resultsEmailBody())}`);
+  }
+  if(hasPhone){
+    const smsUrl = `sms:${phone}?body=${encodeURIComponent(resultsSmsBody())}`;
+    // When doing both, stagger so the first OS handoff doesn't swallow the second.
+    if(hasEmail) setTimeout(()=>openExternal(smsUrl), 800);
+    else openExternal(smsUrl);
+  }
+
+  const sentVia = hasEmail && hasPhone ? "email and messages app"
+    : hasEmail ? "email app"
+    : hasPhone ? "messages app"
+    : "";
+  showResultsModal(sentVia);
+  showToast(sentVia ? "Results ready — send the pre-filled message to keep a copy." : "Here are your results.");
 }
 
 /* ---------- toast ---------- */

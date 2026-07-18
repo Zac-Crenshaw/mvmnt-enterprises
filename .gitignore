@@ -1,0 +1,9 @@
+# Local env — never commit real secrets (set them in the Vercel dashboard)
+.env*.local
+
+# Vercel
+.vercel
+
+# Dependencies / OS cruft
+node_modules
+.DS_Store
